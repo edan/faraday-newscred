@@ -17,7 +17,7 @@ module Faraday
     end
 
     def call(env)
-      params = Faraday::Utils.parse_query(url.query).merge!({ newscred_params })
+      params = Faraday::Utils.parse_query(env[:url].query).merge!(newscred_params)
       env[:url].query = Faraday::Utils.build_query(params)
 
       @app.call env
@@ -25,7 +25,7 @@ module Faraday
 
     def assert_valid_options!(options)
       options.each_key do |key|
-        unless VALID_OPTIONS.include?(key)
+        unless VALID_API_PARAMS.include?(key)
           raise ArgumentError.new("Unknown option: #{key}. Valid options are :#{VALID_OPTIONS.join(', ')}")
         end
       end
