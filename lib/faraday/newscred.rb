@@ -16,9 +16,9 @@ module Faraday
       @newscred_params = newscred_params
     end
 
+    #passed in options trump any existing query string
     def call(env)
-      params = Faraday::Utils.parse_query(env[:url].query).merge!(newscred_params)
-      env[:url].query = Faraday::Utils.build_query(params)
+      env[:url].query = Faraday::Utils.build_query(newscred_params)
 
       @app.call env
     end

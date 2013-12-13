@@ -73,4 +73,12 @@ class FaradayNewscredTest < MiniTest::Unit::TestCase
       "query=fun", response.body)
   end
 
+  def test_overrides_existing_params
+    response = conn { |b|
+      b.use Faraday::Newscred, {:access_key => "some_key"}
+    }.get('/newscred_path?some=thing')
+
+    assert_equal("access_key=some_key", response.body)
+  end
+
 end
