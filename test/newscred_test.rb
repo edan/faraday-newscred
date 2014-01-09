@@ -30,13 +30,14 @@ class FaradayNewscredTest < MiniTest::Unit::TestCase
   end
 
   def test_does_not_allow_invalid_api_params
-    no_access_key = lambda { 
+    invalid_access_key = lambda { 
       conn do |b|
         b.use Faraday::Newscred, {:access_key => "some_key", :invalid_key => "i am not valid"} 
       end.get("/newscred_path") 
     }
-    no_access_key.must_raise(ArgumentError)
-    error = no_access_key.call rescue $!
+    assert_raises(ArgumentError) { invalid_access_key.call }
+
+    error = invalid_access_key.call rescue $!
     assert_equal 'Unknown api params: invalid_key. '\
       'Valid api params are: '\
       '[access_key, format, pagesize, offset, fields, from_date, to_date, query]', error.message
@@ -44,7 +45,8 @@ class FaradayNewscredTest < MiniTest::Unit::TestCase
 
   def test_raises_if_access_key_missing
     no_access_key = lambda { conn { |b| b.use Faraday::Newscred }.get('/newscred_path')}
-    no_access_key.must_raise(ArgumentError)
+    assert_raises(ArgumentError) { no_access_key.call }
+
     error = no_access_key.call rescue $!
     assert_equal 'access_key can not be nil, please pass in access_key in options hash', error.message
   end
